@@ -6,72 +6,67 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol"; 
 
 contract ETHBackedStablecoin is ERC20 {
-    AggregatorV3Interface public immutable ethUsdPriceFeed;
+  AggregatorV3Interface public immutable ethUsdPriceFeed;
 
-    // Tracks ETH collateral deposited by each user.
-    mapping(address => uint256) public ethCollateral;
-    uint256 public constant MIN_COLLATERAL_RATIO_BPS = 15000;
+  // Tracks ETH collateral deposited by each user
+  // Use 1e8 Gwei
+  mapping(address => uint256) public ethCollateral;
+  uint256 public constant MIN_COLLATERAL_RATIO = 15000; // User must have at least 150% collateral
 
-    constructor() ERC20("USD Stable", "FruitUSD") {
-        ethUsdPriceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
-    }
+  constructor() ERC20("Frutero USD Stable", "FruitUSD") {
+      ethUsdPriceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306); // ETH/USD price feed
+  }
 
-    function depositAndMint(uint256 amountToMint) external payable {
-        require(amountToMint > 0, "Mint amount must be greater than zero");
-        require(msg.value > 0, "Must deposit ETH");
+    // Deposit ETH and mint USD only if collateral is above 150%
+    // Mint 100 FruitUSD = 100e18
+  function depositAndMint(uint256 amountToMint) external payable {
+    require(amountToMint > 0, "Mint amount must be greater than zero");
+    require(msg.value > 0, "Must deposit ETH");
 
-        ethCollateral[msg.sender] += msg.value;
+    ethCollateral[msg.sender] += msg.value; // Update collateral balance
 
-        uint256 ethUsdPrice = getLatestPrice();
+    uint256 ethUsdPrice = getLatestPrice();
 
-        // Calculate new total minted balance and ensure overcollateralization
-        uint256 totalCollateralUsd = (ethCollateral[msg.sender] * ethUsdPrice) / 1e8;
-        uint256 newMintedTotal = balanceOf(msg.sender) + amountToMint;
+    // Calculate total collateral in USD
+    uint256 totalCollateralUsd = (ethCollateral[msg.sender] * ethUsdPrice) / 1e8;
+    uint256 newMintedTotal = balanceOf(msg.sender) + amountToMint;
 
-        require(
-            (totalCollateralUsd * 10000) / newMintedTotal >= MIN_COLLATERAL_RATIO_BPS,
-            "Insufficient collateral"
-        );
+    // Check if collateral meets the minimum ratio
+    require(
+        (totalCollateralUsd * 10000) / newMintedTotal >= MIN_COLLATERAL_RATIO,
+        "Insufficient collateral"
+    );
 
-        _mint(msg.sender, amountToMint);
-    }
+    _mint(msg.sender, amountToMint);
+  }
 
     // Burn USD tokens and withdraw ETH
-    function burnAndWithdraw(uint256 amountToBurn) external {
-        require(amountToBurn > 0, "Burn amount must be greater than zero");
-        require(balanceOf(msg.sender) >= amountToBurn, "Insufficient balance");
+  function burnAndWithdrawAll() external {
+    uint256 userBalance = balanceOf(msg.sender);
+    require(userBalance > 0, "Nothing to burn");
 
-        uint256 ethUsdPrice = getLatestPrice();
+    uint256 collateral = ethCollateral[msg.sender];
+    require(collateral > 0, "No collateral");
 
-        // Calculate value of burned tokens in USD
-        uint256 usdValue = amountToBurn;
+    // Reset collateral first (Checks-Effects-Interactions)
+    ethCollateral[msg.sender] = 0;
 
-        // Convert USD value back to ETH (assuming price is in 8 decimals)
-        uint256 ethToReturn = (usdValue * 1e8) / ethUsdPrice;
+    // Burn all FruitUSD
+    _burn(msg.sender, userBalance);
 
-        require(ethCollateral[msg.sender] >= ethToReturn, "Insufficient collateral");
+    // Send full ETH collateral back
+    payable(msg.sender).transfer(collateral);
+  }
 
-        ethCollateral[msg.sender] -= ethToReturn;
+  // Chainlink Price Feed for ETH/USD
+  function getLatestPrice() public view returns (uint256 ethUsdPrice) {
+    (, int256 price, ,uint256 updatedAt,) = ethUsdPriceFeed.latestRoundData();
 
-        _burn(msg.sender, amountToBurn);
-        payable(msg.sender).transfer(ethToReturn);
-    }
+    require(price > 0, "Invalid oracle price");
+    require(block.timestamp - updatedAt < 1 hours, "Stale oracle data");
 
+    return uint256(price);
+  }
 
-    function getLatestPrice() public view returns (uint256 ethUsdPrice) {
-        (
-            , 
-            int256 price,
-            ,
-            uint256 updatedAt,
-            
-        ) = ethUsdPriceFeed.latestRoundData();
-
-        require(price > 0, "Invalid oracle price");
-        require(block.timestamp - updatedAt < 1 hours, "Stale oracle data");
-
-        return uint256(price);
-    }
-
-    receive() external payable {}
+  receive() external payable {}
 }

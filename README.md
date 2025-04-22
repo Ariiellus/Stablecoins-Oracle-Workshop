@@ -16,7 +16,9 @@ En este taller construiremos una Stablecoin sobrecolateralizada utilizando Chain
 ## Material
 
 - [Slides](https://www.canva.com/design/DAGkzobRn0Y/dhJOSMOm1-Ip13JultiN7g/edit?utm_content=DAGkzobRn0Y&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
-- [Workshop]
+- [Workshop](https://www.youtube.com/watch?v=UDdoyYURNz0)
+
+Dentro del contracto SamplePriceFeed.sol encontraremos un ejemplo de cómo utilizar los Data Feeds de Chainlink para obtener el último precio de BTC y ETH en USD.
 
 ## Requisitos
 
@@ -26,6 +28,8 @@ En este taller construiremos una Stablecoin sobrecolateralizada utilizando Chain
 
 ## Taller
 
+### Instalación
+
 Primero vamos a instalar Chainlink y los contratos de OpenZeppelin dentro de nuestro proyecto:
 
 ```bash
@@ -33,4 +37,8 @@ yarn add @chainlink/contracts
 yarn add @openzeppelin/contracts
 ```
 
+### Mint Stablecoin Contract
+
 Usaremos el contrato StableMint.sol como base para este taller.
+
+Paso a paso pendiente...
