@@ -22,12 +22,12 @@ En este taller construiremos una Stablecoin sobrecolateralizada utilizando Chain
 
 - Entender el funcionamiento y los tipos de Stablecoins.
 - Entender el funcionamiento de Oracles.
-- Entender el funcionamiento de Chainlink Price Feeds.
+- Entender el funcionamiento de [Chainlink Price Feeds](https://docs.chain.link/data-feeds/getting-started).
 
 ## Taller
 
 Primero vamos a instalar Chainlink dentro de nuestro proyecto:
 
 ```bash
-npm install @chainlink/contracts --save
+yarn add @chainlink/contracts
 ```
