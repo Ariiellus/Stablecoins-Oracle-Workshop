@@ -30,5 +30,7 @@ Primero vamos a instalar Chainlink y los contratos de OpenZeppelin dentro de nue
 
 ```bash
 yarn add @chainlink/contracts
-yarn install @openzeppelin/contracts
+yarn add @openzeppelin/contracts
 ```
+
+Usaremos el contrato StableMint.sol como base para este taller.

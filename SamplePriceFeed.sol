@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.18;
 
-// import {AggregatorV3Interface} from "@chainlink/contracts@1.3.0/src/v0.8/shared/interfaces/AggregatorV3Interface.sol"; // Use this for Remix
-import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol"; // Use this for Foundry
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
 /**
  * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED
@@ -20,18 +19,21 @@ contract DataConsumerV3 {
      * Aggregator:
      * BTC/USD: 0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43
      * ETH/USD: 0x694AA1769357215DE4FAC081bf1f309aDC325306
-
      */
+
     constructor() {
         btcUsdFeed = AggregatorV3Interface(0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43);
         ethUsdFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
     }
 
-    /**
-     * Returns the latest prices.
-     */
+    // Returns the latest prices.
     function getBTCLatestPrice() public view returns (int) {
-        (, int256 answer, , , ) = btcUsdFeed.latestRoundData();
+        (
+        , 
+        int256 answer,
+        ,
+        ,
+        ) = btcUsdFeed.latestRoundData();
         return answer;
     }
 
