@@ -26,8 +26,9 @@ En este taller construiremos una Stablecoin sobrecolateralizada utilizando Chain
 
 ## Taller
 
-Primero vamos a instalar Chainlink dentro de nuestro proyecto:
+Primero vamos a instalar Chainlink y los contratos de OpenZeppelin dentro de nuestro proyecto:
 
 ```bash
 yarn add @chainlink/contracts
+yarn install @openzeppelin/contracts
 ```
