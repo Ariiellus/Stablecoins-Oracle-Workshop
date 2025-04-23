@@ -39,6 +39,6 @@ yarn add @openzeppelin/contracts
 
 ### Mint Stablecoin Contract
 
-Usaremos el contrato StableMint.sol como base para este taller.
+**Contrato:** 0x657295981f2bac074d1144251b41276018292655 ([ver en Etherscan](https://sepolia.etherscan.io/address/0x657295981f2bac074d1144251b41276018292655))
 
-Paso a paso pendiente...
+[Ver workshop en línea](https://www.youtube.com/watch?v=UDdoyYURNz0)
